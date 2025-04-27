@@ -71,5 +71,5 @@ pnpm start
 
 ## Credits
 
-- Built by [Your Name]
+- Built by Andy Do Nguyen
 - Inspired by the need for accessible, private mental wellness tools

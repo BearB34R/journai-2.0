@@ -63,7 +63,17 @@ export default function ProfilePage() {
         return;
       }
     }
-    setSaveStatus("Profile updated successfully!");
+    // Update Supabase Auth user metadata as well
+    const { error: authError } = await supabase.auth.updateUser({
+      data: { full_name: fullName },
+    });
+    if (authError) {
+      setSaveStatus(
+        "Profile updated, but failed to update authentication metadata."
+      );
+    } else {
+      setSaveStatus("Profile updated successfully!");
+    }
     // Re-fetch profile
     const { data: profileData } = await supabase
       .from("user_profiles")

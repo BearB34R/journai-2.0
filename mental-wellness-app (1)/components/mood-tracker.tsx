@@ -134,7 +134,7 @@ export function MoodTracker() {
                 <Button
                   key={mood.value}
                   variant="ghost"
-                  className={`flex flex-col items-center p-2 ${
+                  className={`flex flex-col items-center p-3 h-full min-h-[5rem] min-w-[4.5rem] ${
                     selectedMood === mood.value ? "bg-teal-50" : ""
                   }`}
                   onClick={() => handleMoodSelect(mood.value as Mood)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -34,7 +34,15 @@ type JournalEntry = {
   date: Date;
 };
 
-export default function JournalPage() {
+export default function JournalPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <JournalPage />
+    </Suspense>
+  );
+}
+
+function JournalPage() {
   const [activeTab, setActiveTab] = useState("write");
   const [title, setTitle] = useState("");
   const [entries, setEntries] = useState<JournalEntry[]>([]);

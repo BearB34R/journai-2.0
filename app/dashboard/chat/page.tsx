@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { Suspense } from "react";
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,14 @@ type Message = {
 };
 
 export default function ChatPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatPageContent />
+    </Suspense>
+  );
+}
+
+function ChatPageContent() {
   // Use a lazy initializer to load messages from localStorage synchronously
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== "undefined") {

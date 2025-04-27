@@ -2,12 +2,15 @@ import { createBrowserClient } from "./client";
 import { createServerClient } from "./server";
 import { redirect } from "next/navigation";
 
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, password: string, name?: string) {
   const supabase = createBrowserClient();
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: { name },
+    },
   });
 
   return { data, error };

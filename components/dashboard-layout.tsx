@@ -1,13 +1,28 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useEffect, useState } from "react";
 
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
-import { Heart, Home, MessageSquare, BookOpen, Compass, Settings, User, Menu, LogOut } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Heart,
+  Home,
+  MessageSquare,
+  BookOpen,
+  Compass,
+  Settings,
+  User,
+  Menu,
+  LogOut,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,22 +30,33 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createBrowserClient();
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = () => {
     // In a real app, this would call an API to log out
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   const navItems = [
     { href: "/dashboard", label: "Home", icon: Home },
@@ -39,9 +65,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: "/dashboard/activities", label: "Activities", icon: Compass },
     { href: "/dashboard/profile", label: "Profile", icon: User },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  ]
+  ];
 
-  const isActive = (path: string) => pathname === path
+  const isActive = (path: string) => pathname === path;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -74,7 +100,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         <Link
                           href={item.href}
                           className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium ${
-                            isActive(item.href) ? "bg-teal-100 text-teal-900" : "text-gray-700 hover:bg-gray-100"
+                            isActive(item.href)
+                              ? "bg-teal-100 text-teal-900"
+                              : "text-gray-700 hover:bg-gray-100"
                           }`}
                         >
                           <item.icon className="h-4 w-4" />
@@ -117,7 +145,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Link
                       href={item.href}
                       className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium ${
-                        isActive(item.href) ? "bg-teal-100 text-teal-900" : "text-gray-700 hover:bg-gray-100"
+                        isActive(item.href)
+                          ? "bg-teal-100 text-teal-900"
+                          : "text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       <item.icon className="h-4 w-4" />
@@ -132,11 +162,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/placeholder.svg" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarFallback>
+                      {user?.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">John Doe</p>
-                    <p className="text-xs text-gray-500">john@example.com</p>
+                    <p className="text-sm font-medium">
+                      {user?.user_metadata?.name || user?.email || "User"}
+                    </p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                 </div>
                 <DropdownMenu>
@@ -156,7 +190,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       <Link href="/dashboard/settings">Settings</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={handleLogout}
+                    >
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -170,5 +207,5 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
-  )
+  );
 }

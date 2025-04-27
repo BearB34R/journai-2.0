@@ -1,32 +1,43 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Heart } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
+import { signIn } from "@/lib/supabase/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate authentication - in a real app, this would call an API
-    setTimeout(() => {
-      setIsLoading(false)
-      router.push("/dashboard")
-    }, 1500)
-  }
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    const { error } = await signIn(email, password);
+    setIsLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-50 to-white p-4">
@@ -41,7 +52,9 @@ export default function LoginPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-            <CardDescription className="text-center">Sign in to your account to continue</CardDescription>
+            <CardDescription className="text-center">
+              Sign in to your account to continue
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
@@ -59,7 +72,10 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link href="/auth/forgot-password" className="text-sm text-teal-600 hover:text-teal-800">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-sm text-teal-600 hover:text-teal-800"
+                  >
                     Forgot password?
                   </Link>
                 </div>
@@ -71,14 +87,24 @@ export default function LoginPage() {
                   required
                 />
               </div>
+              {error && (
+                <div className="text-red-500 text-center text-sm">{error}</div>
+              )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full bg-teal-600 hover:bg-teal-700"
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
               <div className="text-center text-sm">
                 Don't have an account?{" "}
-                <Link href="/auth/signup" className="text-teal-600 hover:text-teal-800 font-medium">
+                <Link
+                  href="/auth/signup"
+                  className="text-teal-600 hover:text-teal-800 font-medium"
+                >
                   Sign up
                 </Link>
               </div>
@@ -87,5 +113,5 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

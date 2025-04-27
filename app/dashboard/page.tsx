@@ -1,104 +1,105 @@
-import { getMoodEntries } from "../actions/mood"
-import { getJournalEntries } from "../actions/journal"
-import { getUserProfile } from "../actions/profile"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { CalendarIcon, BookOpen, Activity } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowRight, Brain, BookOpen, Compass } from "lucide-react";
+import { WelcomeMessage } from "@/components/welcome-message";
+import { MoodTracker } from "@/components/mood-tracker";
 
-export default async function DashboardPage() {
-  const { data: moodEntries } = await getMoodEntries()
-  const { data: journalEntries } = await getJournalEntries()
-  const { data: userProfile } = await getUserProfile()
-
-  const latestMood = moodEntries && moodEntries.length > 0 ? moodEntries[0] : null
-  const recentJournals = journalEntries ? journalEntries.slice(0, 3) : []
-
+export default function Dashboard() {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Welcome{userProfile?.full_name ? `, ${userProfile.full_name}` : ""}</h1>
+    <div className="container mx-auto p-4 md:p-6 space-y-8">
+      <div className="grid gap-6 md:grid-cols-2">
+        <WelcomeMessage />
+        <MoodTracker />
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Mood Tracker Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <CalendarIcon className="mr-2 h-5 w-5" />
-              Mood Tracker
+      <h2 className="text-2xl font-semibold text-teal-900 mt-8 mb-4">
+        Quick Actions
+      </h2>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="border-teal-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Brain className="h-5 w-5 text-teal-600" />
+              Chat with AI Companion
             </CardTitle>
-            <CardDescription>Track how you're feeling today</CardDescription>
           </CardHeader>
           <CardContent>
-            {latestMood ? (
-              <div>
-                <p className="text-2xl font-bold">{latestMood.mood_score}/10</p>
-                <p className="text-sm text-gray-500">
-                  Last updated: {new Date(latestMood.created_at).toLocaleDateString()}
-                </p>
-                {latestMood.notes && <p className="mt-2 text-gray-700">{latestMood.notes}</p>}
-              </div>
-            ) : (
-              <p>No mood entries yet</p>
-            )}
-            <div className="mt-4">
-              <Link href="/mood">
-                <Button>Track Mood</Button>
+            <p className="text-sm text-gray-600 mb-4">
+              Talk about your day, get advice, or just have a friendly
+              conversation.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-teal-200 text-teal-700 hover:bg-teal-50"
+              asChild
+            >
+              <Link href="/dashboard/chat">
+                Start chatting <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </div>
+            </Button>
           </CardContent>
         </Card>
 
-        {/* Journal Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <BookOpen className="mr-2 h-5 w-5" />
+        <Card className="border-teal-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-teal-600" />
               Journal
             </CardTitle>
-            <CardDescription>Express your thoughts and feelings</CardDescription>
           </CardHeader>
           <CardContent>
-            {recentJournals.length > 0 ? (
-              <div className="space-y-2">
-                {recentJournals.map((entry) => (
-                  <div key={entry.id} className="border-b pb-2">
-                    <Link href={`/journal/${entry.id}`} className="font-medium hover:underline">
-                      {entry.title}
-                    </Link>
-                    <p className="text-sm text-gray-500">{new Date(entry.created_at).toLocaleDateString()}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No journal entries yet</p>
-            )}
-            <div className="mt-4">
-              <Link href="/journal">
-                <Button>View Journal</Button>
+            <p className="text-sm text-gray-600 mb-4">
+              Record your thoughts, feelings, and experiences in your private
+              journal.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-teal-200 text-teal-700 hover:bg-teal-50"
+              asChild
+            >
+              <Link href="/dashboard/journal">
+                Open journal <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </div>
+            </Button>
           </CardContent>
         </Card>
 
-        {/* Activities Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Activity className="mr-2 h-5 w-5" />
-              Wellness Activities
+        <Card className="border-teal-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Compass className="h-5 w-5 text-teal-600" />
+              Get Wellness Cards
             </CardTitle>
-            <CardDescription>Discover activities to improve your wellbeing</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Explore mindfulness exercises, physical activities, and more.</p>
-            <div className="mt-4">
-              <Link href="/activities">
-                <Button>Explore Activities</Button>
+            <p className="text-sm text-gray-600 mb-4">
+              Want to feel better? Get personalized wellness cards based on your
+              journal entries and mood.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-teal-200 text-teal-700 hover:bg-teal-50"
+              asChild
+            >
+              <Link href="/dashboard/activities">
+                Get Cards <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </div>
+            </Button>
           </CardContent>
         </Card>
       </div>
+
+      <div className="mt-8 bg-teal-50 rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-teal-900 mb-2">
+          Daily Wellness Tip
+        </h2>
+        <p className="text-teal-700">
+          "Take a few minutes today to practice deep breathing. Inhale for 4
+          counts, hold for 4, and exhale for 6. This simple practice can help
+          reduce stress and bring clarity to your mind."
+        </p>
+      </div>
     </div>
-  )
+  );
 }
